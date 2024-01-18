@@ -11,6 +11,10 @@
 
 export type CheckersMsgCreatePostResponse = object;
 
+export interface CheckersQueryGetSystemInfoResponse {
+  SystemInfo?: CheckerscheckersSystemInfo;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -23,6 +27,11 @@ export interface CheckersQueryParamsResponse {
  * Params defines the parameters for the module.
  */
 export type CheckerscheckersParams = object;
+
+export interface CheckerscheckersSystemInfo {
+  /** @format uint64 */
+  nextId?: string;
+}
 
 export interface ProtobufAny {
   "@type"?: string;
@@ -242,6 +251,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CheckersQueryParamsResponse, RpcStatus>({
       path: `/alice/checkers/checkers/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QuerySystemInfo
+   * @summary Queries a SystemInfo by index.
+   * @request GET:/alice/checkers/checkers/system_info
+   */
+  querySystemInfo = (params: RequestParams = {}) =>
+    this.request<CheckersQueryGetSystemInfoResponse, RpcStatus>({
+      path: `/alice/checkers/checkers/system_info`,
       method: "GET",
       format: "json",
       ...params,
