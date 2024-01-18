@@ -14,8 +14,16 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		SystemInfo: &types.SystemInfo{
+		SystemInfo: types.SystemInfo{
 			NextId: 40,
+		},
+		StoredGameList: []types.StoredGame{
+			{
+				Index: "0",
+			},
+			{
+				Index: "1",
+			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
@@ -29,5 +37,14 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.Equal(t, genesisState.SystemInfo, got.SystemInfo)
+	require.ElementsMatch(t, genesisState.StoredGameList, got.StoredGameList)
 	// this line is used by starport scaffolding # genesis/test/assert
+}
+
+func TestDefaultGenesisState_ExpectedInitialNextId(t *testing.T) {
+	require.EqualValues(t, &types.GenesisState{
+		StoredGameList: []types.StoredGame{},
+		SystemInfo:     types.SystemInfo{uint64(1)},
+	},
+		types.DefaultGenesis())
 }
