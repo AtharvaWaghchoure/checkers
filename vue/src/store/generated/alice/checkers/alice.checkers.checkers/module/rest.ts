@@ -13,6 +13,15 @@ export interface CheckersMsgCreateGameResponse {
   gameIndex?: string;
 }
 
+export interface CheckersMsgPlayMoveResponse {
+  /** @format int32 */
+  capturedX?: number;
+
+  /** @format int32 */
+  capturedY?: number;
+  winner?: string;
+}
+
 export interface CheckersQueryAllStoredGameResponse {
   storedGame?: CheckerscheckersStoredGame[];
 
