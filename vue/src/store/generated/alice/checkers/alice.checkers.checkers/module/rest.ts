@@ -9,7 +9,9 @@
  * ---------------------------------------------------------------
  */
 
-export type CheckersMsgCreatePostResponse = object;
+export interface CheckersMsgCreateGameResponse {
+  gameIndex?: string;
+}
 
 export interface CheckersQueryAllStoredGameResponse {
   storedGame?: CheckerscheckersStoredGame[];

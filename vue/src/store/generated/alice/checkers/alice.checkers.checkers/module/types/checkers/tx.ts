@@ -3,34 +3,36 @@ import { Reader, Writer } from "protobufjs/minimal";
 
 export const protobufPackage = "alice.checkers.checkers";
 
-export interface MsgCreatePost {
+export interface MsgCreateGame {
   creator: string;
-  title: string;
-  body: string;
+  black: string;
+  red: string;
 }
 
-export interface MsgCreatePostResponse {}
+export interface MsgCreateGameResponse {
+  gameIndex: string;
+}
 
-const baseMsgCreatePost: object = { creator: "", title: "", body: "" };
+const baseMsgCreateGame: object = { creator: "", black: "", red: "" };
 
-export const MsgCreatePost = {
-  encode(message: MsgCreatePost, writer: Writer = Writer.create()): Writer {
+export const MsgCreateGame = {
+  encode(message: MsgCreateGame, writer: Writer = Writer.create()): Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
-    if (message.title !== "") {
-      writer.uint32(18).string(message.title);
+    if (message.black !== "") {
+      writer.uint32(18).string(message.black);
     }
-    if (message.body !== "") {
-      writer.uint32(26).string(message.body);
+    if (message.red !== "") {
+      writer.uint32(26).string(message.red);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgCreatePost {
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateGame {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePost } as MsgCreatePost;
+    const message = { ...baseMsgCreateGame } as MsgCreateGame;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -38,10 +40,10 @@ export const MsgCreatePost = {
           message.creator = reader.string();
           break;
         case 2:
-          message.title = reader.string();
+          message.black = reader.string();
           break;
         case 3:
-          message.body = reader.string();
+          message.red = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -51,69 +53,78 @@ export const MsgCreatePost = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreatePost {
-    const message = { ...baseMsgCreatePost } as MsgCreatePost;
+  fromJSON(object: any): MsgCreateGame {
+    const message = { ...baseMsgCreateGame } as MsgCreateGame;
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator);
     } else {
       message.creator = "";
     }
-    if (object.title !== undefined && object.title !== null) {
-      message.title = String(object.title);
+    if (object.black !== undefined && object.black !== null) {
+      message.black = String(object.black);
     } else {
-      message.title = "";
+      message.black = "";
     }
-    if (object.body !== undefined && object.body !== null) {
-      message.body = String(object.body);
+    if (object.red !== undefined && object.red !== null) {
+      message.red = String(object.red);
     } else {
-      message.body = "";
+      message.red = "";
     }
     return message;
   },
 
-  toJSON(message: MsgCreatePost): unknown {
+  toJSON(message: MsgCreateGame): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
-    message.title !== undefined && (obj.title = message.title);
-    message.body !== undefined && (obj.body = message.body);
+    message.black !== undefined && (obj.black = message.black);
+    message.red !== undefined && (obj.red = message.red);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreatePost>): MsgCreatePost {
-    const message = { ...baseMsgCreatePost } as MsgCreatePost;
+  fromPartial(object: DeepPartial<MsgCreateGame>): MsgCreateGame {
+    const message = { ...baseMsgCreateGame } as MsgCreateGame;
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator;
     } else {
       message.creator = "";
     }
-    if (object.title !== undefined && object.title !== null) {
-      message.title = object.title;
+    if (object.black !== undefined && object.black !== null) {
+      message.black = object.black;
     } else {
-      message.title = "";
+      message.black = "";
     }
-    if (object.body !== undefined && object.body !== null) {
-      message.body = object.body;
+    if (object.red !== undefined && object.red !== null) {
+      message.red = object.red;
     } else {
-      message.body = "";
+      message.red = "";
     }
     return message;
   },
 };
 
-const baseMsgCreatePostResponse: object = {};
+const baseMsgCreateGameResponse: object = { gameIndex: "" };
 
-export const MsgCreatePostResponse = {
-  encode(_: MsgCreatePostResponse, writer: Writer = Writer.create()): Writer {
+export const MsgCreateGameResponse = {
+  encode(
+    message: MsgCreateGameResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.gameIndex !== "") {
+      writer.uint32(10).string(message.gameIndex);
+    }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgCreatePostResponse {
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateGameResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePostResponse } as MsgCreatePostResponse;
+    const message = { ...baseMsgCreateGameResponse } as MsgCreateGameResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.gameIndex = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -122,18 +133,31 @@ export const MsgCreatePostResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreatePostResponse {
-    const message = { ...baseMsgCreatePostResponse } as MsgCreatePostResponse;
+  fromJSON(object: any): MsgCreateGameResponse {
+    const message = { ...baseMsgCreateGameResponse } as MsgCreateGameResponse;
+    if (object.gameIndex !== undefined && object.gameIndex !== null) {
+      message.gameIndex = String(object.gameIndex);
+    } else {
+      message.gameIndex = "";
+    }
     return message;
   },
 
-  toJSON(_: MsgCreatePostResponse): unknown {
+  toJSON(message: MsgCreateGameResponse): unknown {
     const obj: any = {};
+    message.gameIndex !== undefined && (obj.gameIndex = message.gameIndex);
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreatePostResponse>): MsgCreatePostResponse {
-    const message = { ...baseMsgCreatePostResponse } as MsgCreatePostResponse;
+  fromPartial(
+    object: DeepPartial<MsgCreateGameResponse>
+  ): MsgCreateGameResponse {
+    const message = { ...baseMsgCreateGameResponse } as MsgCreateGameResponse;
+    if (object.gameIndex !== undefined && object.gameIndex !== null) {
+      message.gameIndex = object.gameIndex;
+    } else {
+      message.gameIndex = "";
+    }
     return message;
   },
 };
@@ -141,7 +165,7 @@ export const MsgCreatePostResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   /** this line is used by starport scaffolding # proto/tx/rpc */
-  CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>;
+  CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -149,15 +173,15 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
   }
-  CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse> {
-    const data = MsgCreatePost.encode(request).finish();
+  CreateGame(request: MsgCreateGame): Promise<MsgCreateGameResponse> {
+    const data = MsgCreateGame.encode(request).finish();
     const promise = this.rpc.request(
       "alice.checkers.checkers.Msg",
-      "CreatePost",
+      "CreateGame",
       data
     );
     return promise.then((data) =>
-      MsgCreatePostResponse.decode(new Reader(data))
+      MsgCreateGameResponse.decode(new Reader(data))
     );
   }
 }
