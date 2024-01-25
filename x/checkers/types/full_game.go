@@ -31,30 +31,12 @@ func (storedGame StoredGame) ParseGame() (game *rules.Game, err error) {
 	return board, nil
 }
 
-func (storedGame StoredGame) Validate() (err error) {
-	_, err = storedGame.GetBlackAddress()
-	if err != nil {
-		return err
-	}
-	_, err = storedGame.GetRedAddress()
-	if err != nil {
-		return err
-	}
-	_, err = storedGame.ParseGame()
-	if err != nil {
-		return err
-	}
-	_, err = storedGame.GetDeadlineAsTime()
-	return err
-}
-
 func (storedGame StoredGame) GetPlayerAddress(color string) (address sdk.AccAddress, found bool, err error) {
 	black, err := storedGame.GetBlackAddress()
 	if err != nil {
 		return nil, false, err
 	}
-
-	red, err := storedGame.GetBlackAddress()
+	red, err := storedGame.GetRedAddress()
 	if err != nil {
 		return nil, false, err
 	}
@@ -80,4 +62,21 @@ func FormatDeadline(deadline time.Time) string {
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
 	return ctx.BlockTime().Add(MaxTurnDuration)
+}
+
+func (storedGame StoredGame) Validate() (err error) {
+	_, err = storedGame.GetBlackAddress()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.GetRedAddress()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.ParseGame()
+	if err != nil {
+		return err
+	}
+	_, err = storedGame.GetDeadlineAsTime()
+	return err
 }

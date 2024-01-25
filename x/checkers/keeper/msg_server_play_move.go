@@ -13,18 +13,15 @@ import (
 func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*types.MsgPlayMoveResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// Fetch the stored game information
 	storedGame, found := k.Keeper.GetStoredGame(ctx, msg.GameIndex)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrGameNotFound, "%s", msg.GameIndex)
 	}
 
-	// Check that the game has not finished yet
 	if storedGame.Winner != rules.PieceStrings[rules.NO_PLAYER] {
 		return nil, types.ErrGameFinished
 	}
 
-	// Is the player Legitimate?
 	isBlack := storedGame.Black == msg.Creator
 	isRed := storedGame.Red == msg.Creator
 	var player rules.Player
@@ -38,18 +35,15 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		player = rules.RED_PLAYER
 	}
 
-	// Instantiate the board in order to implement the rules:
 	game, err := storedGame.ParseGame()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// Is it the player's turn?
 	if !game.TurnIs(player) {
 		return nil, sdkerrors.Wrapf(types.ErrNotPlayerTurn, "%s", player)
 	}
 
-	// Properly conduct the move
 	captured, moveErr := game.Move(
 		rules.Pos{
 			X: int(msg.FromX),
@@ -64,23 +58,32 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrWrongMove, moveErr.Error())
 	}
 
-	// Prepare the updated board to be stored and store the information
 	storedGame.Winner = rules.PieceStrings[game.Winner()]
 
 	lastBoard := game.String()
+
+	systemInfo, found := k.Keeper.GetSystemInfo(ctx)
+	if !found {
+		panic("SystemInfo not found")
+	}
+
 	if storedGame.Winner == rules.PieceStrings[rules.NO_PLAYER] {
 		storedGame.Board = lastBoard
+		k.Keeper.SendToFifoTail(ctx, &storedGame, &systemInfo)
 	} else {
 		storedGame.Board = ""
+		k.Keeper.RemoveFromFifo(ctx, &storedGame, &systemInfo)
 	}
 
 	storedGame.Deadline = types.FormatDeadline(types.GetNextDeadline(ctx))
+	storedGame.MoveCount++
 	storedGame.Turn = rules.PieceStrings[game.Turn]
 	k.Keeper.SetStoredGame(ctx, storedGame)
+	k.Keeper.SetSystemInfo(ctx, systemInfo)
 
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.GameCreatedEventType,
-			sdk.NewAttribute(types.MovePlayedEventType, msg.Creator),
+		sdk.NewEvent(types.MovePlayedEventType,
+			sdk.NewAttribute(types.MovePlayedEventCreator, msg.Creator),
 			sdk.NewAttribute(types.MovePlayedEventGameIndex, msg.GameIndex),
 			sdk.NewAttribute(types.MovePlayedEventCapturedX, strconv.FormatInt(int64(captured.X), 10)),
 			sdk.NewAttribute(types.MovePlayedEventCapturedY, strconv.FormatInt(int64(captured.Y), 10)),
@@ -89,7 +92,6 @@ func (k msgServer) PlayMove(goCtx context.Context, msg *types.MsgPlayMove) (*typ
 		),
 	)
 
-	// Return relevant information regarding the move's result
 	return &types.MsgPlayMoveResponse{
 		CapturedX: int32(captured.X),
 		CapturedY: int32(captured.Y),
