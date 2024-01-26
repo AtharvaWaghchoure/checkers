@@ -80,3 +80,7 @@ func (storedGame StoredGame) Validate() (err error) {
 	_, err = storedGame.GetDeadlineAsTime()
 	return err
 }
+
+func (storedGame *StoredGame) GetWagerCoin() (wager sdk.Coin) {
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(storedGame.Wager)))
+}

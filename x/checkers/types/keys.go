@@ -33,6 +33,7 @@ const (
 	GameCreatedEventGameIndex = "game-index"       // What game is relevant
 	GameCreatedEventBlack     = "black"            // Is is relevant to me?
 	GameCreatedEventRed       = "red"              // Is is relevant to me?
+	GameCreatedEventWager     = "wager"
 )
 
 const (
