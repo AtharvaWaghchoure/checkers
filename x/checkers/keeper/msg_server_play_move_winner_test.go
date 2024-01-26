@@ -36,6 +36,7 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		MoveCount:   40,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
+		Wager:       45,
 	}, game)
 	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
 	require.Len(t, events, 2)
@@ -49,4 +50,14 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		{Key: "winner", Value: "b"},
 		{Key: "board", Value: "*b*b****|**b*b***|*****b**|********|***B****|********|*****b**|********"},
 	}, event.Attributes[(len(testutil.Game1Moves)-1)*6:])
+}
+
+func TestPlayMoveUpToWinnerCalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	escrow.ExpectRefund(context, bob, 90).Times(1).After(payCarol)
+
+	testutil.PlayAllMoves(t, msgServer, context, "1", bob, carol, testutil.Game1Moves)
 }
